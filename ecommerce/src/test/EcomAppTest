@@ -1,0 +1,75 @@
+package test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import dao.OrderProcessorRepositoryImpl;
+import entity.Customer;
+import entity.Product;
+import exception.CustomerNotFoundException;
+import exception.ProductNotFoundException;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+class EcomAppTest {
+    private OrderProcessorRepositoryImpl orderProcessor;
+
+    @BeforeEach
+    void setUp() {
+        orderProcessor = new OrderProcessorRepositoryImpl();
+    }
+    
+
+    @Test
+    void testProductCreation() {
+        //Product product = new Product(9, "Dryer", 100.0, "hair dryer", 2);
+    	Product product = new Product(54, "Laptop", 1500.0, "High-end gaming laptop", 10);
+        boolean result = orderProcessor.createProduct(product);
+        assertTrue(result, "Product should be created successfully");
+    }
+
+    @Test
+    void testAddToCart() throws CustomerNotFoundException, ProductNotFoundException {
+        Customer customer = new Customer(39, "Jeff Keller", "jeff@gmail.com", "password123");
+        //orderProcessor.createCustomer(customer);
+
+        //Product product = new Product(1, "Dryer", 100.0, "hair dryer", 2);
+        Product product = new Product(54, "Laptop", 1500.0, "High-end gaming laptop", 10);
+        //orderProcessor.createProduct(product);
+
+        boolean result = orderProcessor.addToCart(customer, product, 1);
+        assertTrue(result, "Product should be added to cart successfully");
+    }
+
+    @Test
+    void testOrderPlacement() {
+        Customer customer = new Customer(41, "Ram", "ram@gmail.com", "ram123");
+        //orderProcessor.createCustomer(customer);
+
+        Product product = new Product(57, "Modem", 2000.0, "Uninterrupted wifi service", 2);
+        //orderProcessor.createProduct(product);
+
+        List<Map<Product, Integer>> productsWithQuantity = new ArrayList<>();
+        Map<Product, Integer> productQuantityMap = new HashMap<>();
+        productQuantityMap.put(product, 1);
+        productsWithQuantity.add(productQuantityMap);
+
+        boolean result = orderProcessor.placeOrder(customer, productsWithQuantity, "123 Main St");
+        assertTrue(result, "Order should be placed successfully");
+    }
+
+    @Test
+    void testProductNotFoundException() {
+        Exception exception = assertThrows(ProductNotFoundException.class, () -> {
+            orderProcessor.getProductById(999); // Invalid ID
+        });
+        assertEquals("Product with ID 999 not found.", exception.getMessage());
+    }
+
+    // Add more test cases as needed...
+}
